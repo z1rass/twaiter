@@ -37,28 +37,27 @@ def init_db():
 
 init_db()  # Инициализация базы данных при запуске сервера
 
-# Зависимость для подключения к базе данных
-def get_db():
-    con = sqlite3.connect("main.db")
-    try:
-        yield con
-    finally:
-        con.close()
+
+
 
 # Эндпоинт для получения всех постов
 @app.get('/')
-async def home(db: sqlite3.Connection = Depends(get_db)):
-    c = db.cursor()
+async def home():
+    con = sqlite3.connect("main.db")
+    c = con.cursor()
     c.execute("SELECT * FROM posts")
     posts = c.fetchall()
     c.close()
+    con.close()
     return posts
 
 # Эндпоинт для добавления поста
 @app.post('/add_post')
-async def add_post(post: Post, db: sqlite3.Connection = Depends(get_db)):
-    c = db.cursor()
+async def add_post(post: Post):
+    con = sqlite3.connect("main.db")
+    c = con.cursor()
     c.execute("INSERT INTO posts (title, content, author) VALUES (?,?,?)", (post.title, post.content, post.author))
-    db.commit()
+    c.commit()
     c.close()
+    con.close()
     return {"status": "Post added successfully"}
