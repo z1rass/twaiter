@@ -12,10 +12,7 @@ class Post(BaseModel):
     author: str | None = None
 
 # Настройка CORS
-origins = [
-    "http://127.0.0.1:5500",
-    "http://localhost"
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
